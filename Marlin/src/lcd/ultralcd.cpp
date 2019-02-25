@@ -538,6 +538,11 @@ void MarlinUI::quick_feedback(const bool clear_buttons/*=true*/) {
   // Buzz and wait. The delay is needed for buttons to settle!
   buzz(LCD_FEEDBACK_FREQUENCY_DURATION_MS, LCD_FEEDBACK_FREQUENCY_HZ);
 
+    Wire.beginTransmission(OVLCTRL_ADDRESS); //GGE 03.02.19
+  Wire.write(9); //GGE 03.02.19
+  Wire.write(0); //GGE 03.02.19
+  Wire.endTransmission(); //GGE 03.02.19
+
   #if HAS_LCD_MENU
     #if ENABLED(LCD_USE_I2C_BUZZER)
       delay(10);
@@ -1060,26 +1065,54 @@ void MarlinUI::update() {
             // for the else-ifs below
           }
           #if BUTTON_EXISTS(UP)
-            else if (BUTTON_PRESSED(UP) && btn_cntr <= 9) {
+            else if (BUTTON_PRESSED(UP) && btn_cntr <= 3) {
               btn_cntr = btn_cntr + 1; 
               encoderDiff = (ENCODER_STEPS_PER_MENU_ITEM) * pulses;
-              next_button_update_ms = now + 300;
+                
+                Wire.beginTransmission(OVLCTRL_ADDRESS); 
+                Wire.write(9); 
+                Wire.write(2); 
+                Wire.endTransmission();
+
+              next_button_update_ms = now + 250;
             }
-            else if (BUTTON_PRESSED(UP) && btn_cntr >= 9) {
+            else if (BUTTON_PRESSED(UP) && btn_cntr >= 3) {
               btn_cntr = btn_cntr + 1; 
-              encoderDiff = (ENCODER_STEPS_PER_MENU_ITEM) * pulses;
+              encoderDiff = (ENCODER_STEPS_PER_MENU_ITEM * 4) * pulses;
+                
+                Wire.beginTransmission(OVLCTRL_ADDRESS); 
+                Wire.write(9); 
+                Wire.write(2); 
+                Wire.write(9); 
+                Wire.write(2); 
+                Wire.endTransmission();
+
               next_button_update_ms = now + 150;
             }
           #endif
           #if BUTTON_EXISTS(DWN)
-            else if (BUTTON_PRESSED(DWN) && btn_cntr <= 9) {
+            else if (BUTTON_PRESSED(DWN) && btn_cntr <= 3) {
               btn_cntr = btn_cntr + 1; 
               encoderDiff = -(ENCODER_STEPS_PER_MENU_ITEM) * pulses;
-              next_button_update_ms = now + 300;
+                
+                Wire.beginTransmission(OVLCTRL_ADDRESS); 
+                Wire.write(9); 
+                Wire.write(2); 
+                Wire.endTransmission();
+
+              next_button_update_ms = now + 250;
             }
-            else if (BUTTON_PRESSED(DWN) && btn_cntr >= 9) {
+            else if (BUTTON_PRESSED(DWN) && btn_cntr >= 3) {
               btn_cntr = btn_cntr + 1; 
               encoderDiff = -(ENCODER_STEPS_PER_MENU_ITEM) * pulses;
+
+                Wire.beginTransmission(OVLCTRL_ADDRESS); 
+                Wire.write(9); 
+                Wire.write(2); 
+                Wire.write(9); 
+                Wire.write(2); 
+                Wire.endTransmission();
+                
               next_button_update_ms = now + 150;
             }
           #endif
